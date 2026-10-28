@@ -1,8 +1,8 @@
-# 🚀 AGENT WEB · Colab LLM Worker
+# 🚀 Colab LLM Worker
 
 Google Colab 上で任意の GGUF モデル（Huihui-Qwen3.8-27B、Qwen2.5-Coder、Llama-3、Mistral 等）をロードし、**Google 公式 SSH ポートフォワード**（または Cloudflare トンネル）経由で自宅の AGENT WEB から高速・安全にテキスト生成推論を行うための実行ノートブックです。
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/kettlenoir/colab-llm-worker/blob/main/colab-llm-worker.ipynb)
 
 ---
 
