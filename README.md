@@ -1,43 +1,37 @@
-# 🚀 Colab LLM Worker
+# 🚀 Colab GPU Workers
 
-Google Colab 上で任意の GGUF モデル（Huihui-Qwen3.8-27B、Qwen2.5-Coder、Llama-3、Mistral 等）をロードし、**Google 公式 SSH ポートフォワード**（または Cloudflare トンネル）経由で自宅の AGENT WEB から高速・安全にテキスト生成推論を行うための実行ノートブックです。
+Google Colab の GPU（L4 / T4）を活用して、AGENT WEB から安全・高速に「LLMテキスト生成」「SDXL高精細画像生成」「AnimateDiff動作用生成」「Blender 3Dレンダリング」を実行するための実行ノートブック集です。
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/kettlenoir/colab-llm-worker/blob/main/colab-llm-worker.ipynb)
+---
+
+## 📑 収録ノートブック一覧（ワンクリック起動）
+
+| 機能 | ノートブック | 推奨GPU | 起動リンク |
+| :--- | :--- | :--- | :--- |
+| **LLM テキスト生成 (GGUF / Qwen3.8等)** | `llm.ipynb` | **L4 GPU** | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/kettlenoir/colab-gpu-workers/blob/main/llm.ipynb) |
+| **SDXL 高精細画像生成 (1024px基準)** | `sdxl.ipynb` | **L4 / T4** | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/kettlenoir/colab-gpu-workers/blob/main/sdxl.ipynb) |
+| **動作用生成 (AnimateDiff / 16フレーム)** | `motion.ipynb` | **T4 / L4** | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/kettlenoir/colab-gpu-workers/blob/main/motion.ipynb) |
+| **Blender 4.x 3Dレンダリング (Cycles / Eevee)** | `blender.ipynb` | **T4 / L4** | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/kettlenoir/colab-gpu-workers/blob/main/blender.ipynb) |
 
 ---
 
 ## 🌟 特徴
 
-- **Google 公式 SSH 接続対応**: 外部中継を一切介さず、Google 公式 WebSocket + OpenSSH で完全な閉域・暗号化トンネル（`http://127.0.0.1:8765`）直結。
-- **最新 Colab 環境の完全適合**: CUDA 12 / 13 自動判別、`libcudart.so.12` 未検出エラー防止、`fileno` 例外回避、Google Drive FUSE ハング対策を完備。
-- **GGUF 全層 GPU オフロード**: NVIDIA L4 GPU（24GB VRAM）を活用し、27B〜32B クラスの大型モデルも高速推論可能。
-- **Colab フォーム (`#@param`) 搭載**: ノートブックのコードを触らずに、GUI フォームからモデルパスやコンテキスト長を切り替え可能。
+- **Google 公式 SSH 接続対応（キー入力不要）**:
+  外部中継サーバ（Cloudflare）を介さず、Google 公式 WebSocket + OpenSSH で完全な閉域・暗号化トンネル（`http://127.0.0.1:8765`）直結。AGENT WEB 側からは接続キーの入力も不要でワンクリック自動接続されます。
+- **最新 Colab 環境の完全適合**:
+  CUDA 12 / 13 自動判別、`libcudart.so.12` 未検出エラー防止、`fileno` 例外回避、Google Drive FUSE ハング対策を完備。
+- **AGENT WEB との完全連動**:
+  各ワーカーの推論・生成結果は自動的にローカル VM 側へ保存・管理されます。
 
 ---
 
 ## 📖 使い方
 
-### 1. Google Drive の準備
-Google Drive にフォルダ（例: `colab-model/`）を作成し、お好みの GGUF モデル（例: `Huihui-Qwen3.8-27B-abliterated-GSQ-RCO-IQ3_S.gguf`）を配置しておきます。
-
-### 2. Colab でノートブックを開く
-上記の **[Open in Colab]** バッジ、または Colab の「GitHub」タブからこのノートブックを開きます。
-- ランタイムのタイプ: **L4 GPU**（推奨）を選択してください。
-
-### 3. セルを上から順に実行
-1. **1️⃣ 環境自動構築**: `llama-cpp-python` と CUDA 共有ライブラリを自動設定。
-2. **2️⃣ Google Drive マウント & モデル選択・ロード**: フォームでモデル名・フォルダ・コンテキスト長を選択し、GPU へロード。
-3. **3️⃣ 単体動作テスト（任意）**: Colab 単体で推論動作を確認。
-4. **4️⃣ AGENT WEB 連携 Worker 起動**: ポート 8765 で待機サーバーを起動し、接続トークンを出力。
-
-### 4. AGENT WEB 側での接続
-ローカル VM のターミナルで SSH ポートフォワードを実行（バックグラウンド待機中の場合は不要です）:
-```bash
-ssh -N -f -L 8765:localhost:8765 colab
-```
-AGENT WEB の [Colab 管理画面](#colab) の「接続・ノートブック設定」で以下を登録します:
-- **接続URL**: `http://127.0.0.1:8765`
-- **接続キー**: セル4に出力されたトークン文字列
+1. 上の表の **[Open in Colab]** バッジをクリックして目的のノートブックを開きます。
+2. ノートブック上部のランタイム設定で、推奨 GPU（L4 または T4）を選択します。
+3. セルを上から順に実行します。
+4. AGENT WEB（`#colab` 画面）の「接続する (自動取得)」ボタンを押すと接続完了します。
 
 ---
 
