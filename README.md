@@ -11,7 +11,7 @@ Google Colab の GPU（L4 / T4）を活用して、AGENT WEB から安全・高�
 | **LLM テキスト生成 (GGUF / Qwen3.8等)** | `llm.ipynb` | **L4 GPU** | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/kettlenoir/colab-gpu-workers/blob/main/llm.ipynb) |
 | **SDXL 高精細画像生成 (1024px基準)** | `sdxl.ipynb` | **L4 / T4** | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/kettlenoir/colab-gpu-workers/blob/main/sdxl.ipynb) |
 | **動作用生成 (AnimateDiff / 16フレーム)** | `motion.ipynb` | **T4 / L4** | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/kettlenoir/colab-gpu-workers/blob/main/motion.ipynb) |
-| **Blender 4.x 3Dレンダリング (Cycles / Eevee)** | `blender.ipynb` | **T4 / L4** | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/kettlenoir/colab-gpu-workers/blob/main/blender.ipynb) |
+| **Blender 4.2 LTS 3Dレンダリング (Cycles / Eevee)** | `blender.ipynb` | **T4 / L4** | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/kettlenoir/colab-gpu-workers/blob/main/blender.ipynb) |
 
 ---
 
@@ -32,6 +32,7 @@ Google Colab の GPU（L4 / T4）を活用して、AGENT WEB から安全・高�
 2. ノートブック上部のランタイム設定で、推奨 GPU（L4 または T4）を選択します。
 3. セルを上から順に実行します。
 4. AGENT WEB（`#colab` 画面）の「接続する (自動取得)」ボタンを押すと接続完了します。
+   ※ SDXL・AnimateDiff・Blender の各ノートブックは、実行時に表示される一時URLと接続キーを AGENT WEB の Colab 画面に登録してください。
 
 ---
 
