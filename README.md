@@ -2,6 +2,8 @@
 
 Google Colab の GPU（L4 / T4）を活用して、AGENT WEB から安全・高速に「LLMテキスト生成」「SDXL高精細画像生成」「AnimateDiff動作用生成」「Blender 3Dレンダリング」を実行するための実行ノートブック集です。
 
+各ワーカーは汎用 HTTP API（Bearer 認証 + JSON）でもあるため、AGENT WEB はそのクライアントの一つです。仕様は後述の「🔌 汎用 API として使う」を参照してください。
+
 ---
 
 ## 📑 収録ノートブック一覧（ワンクリック起動）
@@ -17,8 +19,8 @@ Google Colab の GPU（L4 / T4）を活用して、AGENT WEB から安全・高�
 
 ## 🌟 特徴
 
-- **Google 公式 SSH 接続対応（キー入力不要）**:
-  外部中継サーバ（Cloudflare）を介さず、Google 公式 WebSocket + OpenSSH で完全な閉域・暗号化トンネル（`http://127.0.0.1:8765`）直結。AGENT WEB 側からは接続キーの入力も不要でワンクリック自動接続されます。
+- **Google 公式 SSH 接続対応（キー入力不要・全ワーカー共通）**:
+  外部中継サーバを介さず、Google 公式 WebSocket + OpenSSH で完全な閉域・暗号化トンネル（`http://127.0.0.1:8765`）直結。AGENT WEB 側からは接続キーの入力も不要でワンクリック自動接続されます。Cloudflare トンネルは全ワーカーで予備フォールバックとして残しています（SSH が使えない環境向け。使い捨てURLのため不安定になることがあります）。
 - **最新 Colab 環境の完全適合**:
   CUDA 12 / 13 自動判別、`libcudart.so.12` 未検出エラー防止、`fileno` 例外回避、Google Drive FUSE ハング対策を完備。
 - **AGENT WEB との完全連動**:
@@ -31,8 +33,27 @@ Google Colab の GPU（L4 / T4）を活用して、AGENT WEB から安全・高�
 1. 上の表の **[Open in Colab]** バッジをクリックして目的のノートブックを開きます。
 2. ノートブック上部のランタイム設定で、推奨 GPU（L4 または T4）を選択します。
 3. セルを上から順に実行します。
-4. AGENT WEB（`#colab` 画面）の「接続する (自動取得)」ボタンを押すと接続完了します。
-   ※ SDXL・AnimateDiff・Blender の各ノートブックは、実行時に表示される一時URLと接続キーを AGENT WEB の Colab 画面に登録してください。
+4. AGENT WEB（`#colab` 画面）の「接続する (自動取得)」ボタンを押すと接続完了します（全ノートブック共通・SSH接続）。
+   ※ SSH が使えない環境では、セル出力の【2. Cloudflare トンネル】に表示される一時URLと接続キーを AGENT WEB の Colab 画面に登録してください。
+
+---
+
+## 🔌 汎用 API として使う
+
+ワーカーは AGENT WEB 専用ではありません。ノートブックのセルを実行すると、ワーカーが `8765` 番ポートで HTTP API を公開します。接続先は SSH ポートフォワード経由の `http://127.0.0.1:8765`（推奨）か、Cloudflare トンネルの一時URLです。全エンドポイント共通で `Authorization: Bearer <接続キー>` ヘッダーが必要です（接続キーはセル出力に表示されます）。
+
+```bash
+curl -H "Authorization: Bearer <接続キー>" http://127.0.0.1:8765/status
+```
+
+| 対象 | エンドポイント | 内容 |
+| :--- | :--- | :--- |
+| 共通 | `GET /status` | 状態・GPU・モデル・対応機能（capabilities） |
+| LLM | `POST /chat` | `messages` / `max_tokens` / `temperature` を受けてテキスト生成 |
+| SDXL / AnimateDiff | `POST /jobs`、`GET /jobs/{id}` | 画像ジョブの送信と結果取得（完了時は画像データを含む）。参照画像は `POST /assets/{sha256}` で事前登録 |
+| Blender | `POST /assets/{sha256}`、`POST /jobs`、`GET /jobs/{id}`、`GET /jobs/{id}/frames/{n}` | .blend の登録、レンダージョブの送信、状態取得、フレーム画像の取得 |
+
+AGENT WEB が行っている「接続キーの自動取得」は、ワーカーが `/content/token.txt` にキーを書き出し、それを SSH 経由で読み取るという約束事です。他のクライアントはセル出力に表示されるキーをそのまま使えます。
 
 ---
 
